@@ -12,7 +12,7 @@ import org.http4s.client.dsl.io._
 import org.http4s.implicits._
 
 trait OpenWeatherClient{
-  def get: IO[OpenWeatherClient.Joke]
+  def get(): IO[OpenWeatherClient.Joke]
 }
 
 object OpenWeatherClient {
