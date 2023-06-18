@@ -5,7 +5,7 @@ import cats.implicits._
 import io.circe.generic.JsonCodec
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder, HCursor, Json}
-import jmurrell.weatherapp.WeatherappRoutes.{Coordinates, Latitude, Longitude}
+import jmurrell.weatherapp.WeatherappRoutes.{Latitude, Longitude}
 import org.http4s.Method._
 import org.http4s._
 import org.http4s.circe._
@@ -25,7 +25,7 @@ object OpenWeatherClient {
     main: String
                                    ) extends AnyVal
 
-  final case class WeatherResponse(coord: Coordinates, weather: List[WeatherCondition], temp: Temperature)
+  final case class WeatherResponse(lat: Latitude, lon: Longitude, weather: List[WeatherCondition], temp: Temperature)
   object WeatherResponse {
     implicit val weatherConditionDecoder: Decoder[WeatherCondition] = deriveDecoder[WeatherCondition]
     implicit val weatherConditionEncoder: Encoder[WeatherCondition] = deriveEncoder[WeatherCondition]
@@ -37,27 +37,26 @@ object OpenWeatherClient {
     implicit val longitudeEncoder: Encoder[Longitude] = deriveEncoder[Longitude]
     implicit val latitudeEncoder: Encoder[Latitude] = deriveEncoder[Latitude]
 
-    implicit val coordinatesDecoder: Decoder[Coordinates] = deriveDecoder[Coordinates]
-    implicit val coordinatesEntityDecoder: EntityDecoder[IO, Coordinates] = jsonOf
-    implicit val coordinatesEncoder: Encoder[Coordinates] = deriveEncoder[Coordinates]
-
     implicit val weatherDecoder: Decoder[WeatherResponse] = (c: HCursor) => for {
-      coords <- c.downField("coord").as[Coordinates]
-      weatherConditions <- c.downField("weather").as[List[WeatherCondition]]
-      temperature <- c.downField("main").downField("temp").as[Temperature]
-    } yield WeatherResponse(coords, weatherConditions, temperature)
+      lat <- c.downField("lat").as[Latitude]
+      lon <- c.downField("lon").as[Longitude]
+      weatherConditions <- c.downField("current").downField("weather").as[List[WeatherCondition]]
+      temperature <- c.downField("current").downField("temp").as[Temperature]
+    } yield WeatherResponse(lat, lon, weatherConditions, temperature)
     implicit val weatherEntityDecoder: EntityDecoder[IO, WeatherResponse] = jsonOf
     implicit val weatherEncoder: Encoder[WeatherResponse] = deriveEncoder[WeatherResponse]
     implicit val weatherEntityEncoder: EntityEncoder[IO, WeatherResponse] = jsonEncoderOf
 
   }
 
-  final case class JokeError(e: Throwable) extends RuntimeException
+  final case class WeatherAppError(e: Throwable) extends RuntimeException
 
   def impl(C: Client[IO]): OpenWeatherClient = new OpenWeatherClient{
     def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClient.WeatherResponse] = {
-      C.expect[WeatherResponse](GET(uri"https://icanhazdadjoke.com/"))
-        .adaptError{ case t => JokeError(t)} // Prevent Client Json Decoding Failure Leaking
+      C.expect[WeatherResponse](
+        GET(uri"https://api.openweathermap.org/data/3.0/onecall".withQueryParams(Map("lat" -> lat.show, "lon" -> lon.show, "appid" -> "abcd")))
+      )
+        .adaptError{ case t => WeatherAppError(t)} // Prevent Client Json Decoding Failure Leaking
     }
   }
 }
