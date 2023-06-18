@@ -5,7 +5,6 @@ import cats.implicits._
 import io.circe.generic.JsonCodec
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder, HCursor, Json}
-import jmurrell.weatherapp.WeatherappRoutes.{Latitude, Longitude}
 import org.http4s.Method._
 import org.http4s._
 import org.http4s.circe._
@@ -13,6 +12,7 @@ import org.http4s.client.Client
 import org.http4s.client.dsl.io._
 import org.http4s.implicits._
 import WeatherappRoutes._
+import jmurrell.weatherapp.Models._
 
 trait OpenWeatherClient{
   def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClient.WeatherResponse]

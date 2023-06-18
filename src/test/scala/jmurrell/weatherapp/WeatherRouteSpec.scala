@@ -3,7 +3,7 @@ package jmurrell.weatherapp
 import cats.effect.IO
 import cats.implicits.toShow
 import jmurrell.weatherapp.OpenWeatherClient.{Temperature, WeatherCondition, WeatherResponse}
-import jmurrell.weatherapp.WeatherappRoutes.{Latitude, Longitude}
+import jmurrell.weatherapp.Models._
 import org.http4s._
 import org.http4s.implicits._
 import munit.CatsEffectSuite

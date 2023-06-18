@@ -5,8 +5,8 @@ import io.circe
 import io.circe.jawn
 import jmurrell.weatherapp.OpenWeatherClient.{Temperature, WeatherCondition, WeatherResponse}
 import jmurrell.weatherapp.OpenWeatherClient.WeatherResponse.weatherEntityDecoder
-import jmurrell.weatherapp.WeatherappRoutes.{Latitude, Longitude}
 import munit.{CatsEffectSuite, FunSuite}
+import jmurrell.weatherapp.Models._
 
 class WeatherResponseDecoderSpec() extends FunSuite {
   test("WeatherResponseDecoder decodes example api json") {
