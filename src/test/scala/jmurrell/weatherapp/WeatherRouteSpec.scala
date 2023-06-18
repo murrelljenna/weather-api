@@ -21,18 +21,36 @@ class WeatherRouteSpec extends CatsEffectSuite {
   )
 
   test("Request with valid latitude and longitude returns status code 200") {
-    val lat = Latitude(100f)
-    val lon = Longitude(100f)
+    val lat = Latitude.unvalidated(80f)
+    val lon = Longitude.unvalidated(100f)
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 
     assertIO(weatherRoute(validReq).map(_.status),Status.Ok)
   }
 
+  test("Request with out of bounds latitude and valid longitude returns status code 400") {
+    val lat = Latitude.unvalidated(100f)
+    val lon = Longitude.unvalidated(100f)
+
+    val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
+
+    assertIO(weatherRoute(validReq).map(_.status), Status.BadRequest)
+  }
+
+  test("Request with out of bounds longitude and valid latitude returns status code 400") {
+    val lat = Latitude.unvalidated(80f)
+    val lon = Longitude.unvalidated(190f)
+
+    val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
+
+    assertIO(weatherRoute(validReq).map(_.status), Status.BadRequest)
+  }
+
   private[this] def weatherRoute(req: Request[IO]): IO[Response[IO]] = {
     val mockWeatherResponse = WeatherResponse(
-      Latitude(50f),
-      Longitude(50f),
+      Latitude.unvalidated(50f),
+      Longitude.unvalidated(50f),
       List(
         WeatherCondition("Rain")
       ),
