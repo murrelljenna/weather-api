@@ -20,7 +20,7 @@ object OpenWeatherClient {
       C.expect[OpenWeatherClientData](
         GET(uri"https://api.openweathermap.org/data/3.0/onecall".withQueryParams(Map("lat" -> lat.show, "lon" -> lon.show, "appid" -> "abcd")))
       )
-        .adaptError{ case t => WeatherAppError(t)} // Prevent Client Json Decoding Failure Leaking
+        .adaptError{ case t => WeatherAppError(t)}
     }
   }
 }
