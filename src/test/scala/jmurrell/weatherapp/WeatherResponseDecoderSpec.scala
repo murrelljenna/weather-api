@@ -116,7 +116,6 @@ class WeatherResponseDecoderSpec() extends FunSuite {
       circe.jawn.decode[OpenWeatherClientData](fixture),
       Right(
         OpenWeatherClientData(
-          Latitude(33.44f), Longitude(-94.04f),
           List(WeatherCondition("Clouds")),
           Temperature(292.55f)
         )

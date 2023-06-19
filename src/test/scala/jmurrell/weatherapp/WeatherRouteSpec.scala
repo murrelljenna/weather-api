@@ -10,7 +10,7 @@ import munit.CatsEffectSuite
 class WeatherRouteSpec extends CatsEffectSuite {
   private[this] def mockWeatherClient(res: OpenWeatherClientData) = new OpenWeatherClient {
     override def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData] = IO.pure(
-      res.copy(lat = lat, lon = lon)
+      res
     )
   }
 
@@ -53,8 +53,6 @@ class WeatherRouteSpec extends CatsEffectSuite {
 
   object Fixture {
     val anyMockWeatherResponse = OpenWeatherClientData(
-      Latitude.unvalidated(50f),
-      Longitude.unvalidated(50f),
       List(
         WeatherCondition("Rain")
       ),

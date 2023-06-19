@@ -18,7 +18,7 @@ object WeatherappRoutes {
             {
               case (lat, lon) => client.get(lat, lon)
                 .map({
-                  case OpenWeatherClientData(_, _, weatherConditions, temperature) => WeatherAppResponse(
+                  case OpenWeatherClientData(weatherConditions, temperature) => WeatherAppResponse(
                     weatherConditions, temperature, TemperatureVerdict.fromTemperature(temperature)
                   )
 

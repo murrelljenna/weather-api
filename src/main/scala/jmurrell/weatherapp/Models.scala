@@ -64,17 +64,15 @@ object Models {
   object ValidatedLatitudeMatcher extends ValidatingQueryParamDecoderMatcher[Latitude]("lat")
   object ValidatedLongitudeMatcher extends ValidatingQueryParamDecoderMatcher[Longitude]("lon")
 
-  final case class OpenWeatherClientData(lat: Latitude, lon: Longitude, weather: List[WeatherCondition], temp: Temperature)
+  final case class OpenWeatherClientData(weather: List[WeatherCondition], temp: Temperature)
 
   object OpenWeatherClientData {
     import io.circe.generic.semiauto._
     import io.circe.{Decoder, Encoder, HCursor}
     implicit val weatherDecoder: Decoder[OpenWeatherClientData] = (c: HCursor) => for {
-      lat <- c.downField("lat").as[Latitude]
-      lon <- c.downField("lon").as[Longitude]
       weatherConditions <- c.downField("current").downField("weather").as[List[WeatherCondition]]
       temperature <- c.downField("current").downField("temp").as[Temperature]
-    } yield OpenWeatherClientData(lat, lon, weatherConditions, temperature)
+    } yield OpenWeatherClientData(weatherConditions, temperature)
     implicit val weatherEntityDecoder: EntityDecoder[IO, OpenWeatherClientData] = jsonOf
   }
 
