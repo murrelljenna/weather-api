@@ -2,11 +2,10 @@ package jmurrell.weatherapp
 
 
 import cats.effect.IO
-import cats.implicits.catsSyntaxApplicativeError
 import jmurrell.weatherapp.Models._
-import jmurrell.weatherapp.OpenWeatherClient.WeatherAppError
 import org.http4s.{HttpRoutes, QueryParamDecoder, Response, Status}
 import org.http4s.dsl.io._
+import org.http4s.ember.core.EmberException.ParseError
 
 object WeatherappRoutes {
   def weatherRoutes(client: OpenWeatherClient): HttpRoutes[IO] = {
@@ -18,14 +17,12 @@ object WeatherappRoutes {
             {
               case (lat, lon) => client.get(lat, lon)
                 .map({
-                  case OpenWeatherClientData(weatherConditions, temperature) => WeatherAppResponse(
-                    weatherConditions, temperature, TemperatureVerdict.fromTemperature(temperature)
+                  case OpenWeatherClientData(weatherConditions, temperature, alerts) => WeatherAppResponse(
+                    weatherConditions, temperature, TemperatureVerdict.fromTemperature(temperature), alerts.nonEmpty, alerts
                   )
-
                 }
                 )
                 .flatMap(res => Ok(res))
-                .handleErrorWith(t => InternalServerError(t.getMessage))
             }
         )
     }

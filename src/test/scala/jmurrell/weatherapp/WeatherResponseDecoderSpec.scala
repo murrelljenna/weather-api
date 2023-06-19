@@ -76,12 +76,6 @@ class WeatherResponseDecoderSpec() extends FunSuite {
         |			"eve": 297.51,
         |			"morn": 292.55
         |		},
-        |		"feels_like": {
-        |			"day": 299.21,
-        |			"night": 291.37,
-        |			"eve": 297.86,
-        |			"morn": 292.87
-        |		},
         |		"pressure": 1016,
         |		"humidity": 59,
         |		"dew_point": 290.48,
@@ -117,7 +111,12 @@ class WeatherResponseDecoderSpec() extends FunSuite {
       Right(
         OpenWeatherClientData(
           List(WeatherCondition("Clouds")),
-          Kelvin(292.55f)
+          Kelvin(292.55f),
+          List(WeatherAlert(
+            AlertSender("NWS Philadelphia - Mount Holly (New Jersey, Delaware, Southeastern Pennsylvania)"),
+            AlertEvent("Small Craft Advisory"),
+            AlertDescription("...SMALL CRAFT ADVISORY REMAINS IN EFFECT FROM 5 PM THIS\nAFTERNOON TO 3 AM EST FRIDAY...\n* WHAT...North winds 15 to 20 kt with gusts up to 25 kt and seas\n3 to 5 ft expected.\n* WHERE...Coastal waters from Little Egg Inlet to Great Egg\nInlet NJ out 20 nm, Coastal waters from Great Egg Inlet to\nCape May NJ out 20 nm and Coastal waters from Manasquan Inlet\nto Little Egg Inlet NJ out 20 nm.\n* WHEN...From 5 PM this afternoon to 3 AM EST Friday.\n* IMPACTS...Conditions will be hazardous to small craft.")
+          ))
         )
       )
     )
