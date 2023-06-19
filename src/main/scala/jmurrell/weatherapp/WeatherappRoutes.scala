@@ -2,6 +2,7 @@ package jmurrell.weatherapp
 
 
 import cats.effect.IO
+import cats.implicits.catsSyntaxApplicativeError
 import jmurrell.weatherapp.Models._
 import jmurrell.weatherapp.OpenWeatherClient.WeatherAppError
 import org.http4s.{HttpRoutes, QueryParamDecoder, Response, Status}
@@ -15,7 +16,9 @@ object WeatherappRoutes {
           .fold[IO[Response[IO]]](
           parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")),
             {
-              case (lat, lon) => client.get(lat, lon).flatMap(res => Ok(res))
+              case (lat, lon) => client.get(lat, lon)
+                .flatMap(res => Ok(res))
+                .handleErrorWith(t => InternalServerError(t.getMessage))
             }
         )
     }
