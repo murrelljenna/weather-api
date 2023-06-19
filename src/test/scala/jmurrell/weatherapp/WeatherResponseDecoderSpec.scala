@@ -117,7 +117,7 @@ class WeatherResponseDecoderSpec() extends FunSuite {
       Right(
         OpenWeatherClientData(
           List(WeatherCondition("Clouds")),
-          Temperature(292.55f)
+          Kelvin(292.55f)
         )
       )
     )

@@ -41,7 +41,7 @@ object Models {
     def unvalidated(value: Float): Longitude = Longitude(value)
   }
 
-  final case class Temperature(value: Float) extends AnyVal
+  final case class Kelvin(value: Float) extends AnyVal
   final case class WeatherCondition(main: String) extends AnyVal
 
   implicit val weatherConditionDecoder: Decoder[WeatherCondition] = deriveDecoder[WeatherCondition]
@@ -54,24 +54,24 @@ object Models {
   implicit val latitudeQueryParamDecoder: QueryParamDecoder[Longitude] =
     QueryParamDecoder[Float].emapValidatedNel(Longitude.validated)
 
-  implicit val temperatureDecoder: Decoder[Temperature] = Decoder[Float].map(Temperature.apply)
+  implicit val temperatureDecoder: Decoder[Kelvin] = Decoder[Float].map(Kelvin.apply)
   implicit val longitudeDecoder: Decoder[Longitude] = Decoder[Float].map(Longitude.apply)
   implicit val latitudeDecoder: Decoder[Latitude] = Decoder[Float].map(Latitude.apply)
-  implicit val temperatureEncoder: Encoder[Temperature] = deriveEncoder[Temperature]
+  implicit val temperatureEncoder: Encoder[Kelvin] = deriveEncoder[Kelvin]
   implicit val longitudeEncoder: Encoder[Longitude] = deriveEncoder[Longitude]
   implicit val latitudeEncoder: Encoder[Latitude] = deriveEncoder[Latitude]
 
   object ValidatedLatitudeMatcher extends ValidatingQueryParamDecoderMatcher[Latitude]("lat")
   object ValidatedLongitudeMatcher extends ValidatingQueryParamDecoderMatcher[Longitude]("lon")
 
-  final case class OpenWeatherClientData(weather: List[WeatherCondition], temp: Temperature)
+  final case class OpenWeatherClientData(weather: List[WeatherCondition], temp: Kelvin)
 
   object OpenWeatherClientData {
     import io.circe.generic.semiauto._
     import io.circe.{Decoder, Encoder, HCursor}
     implicit val weatherDecoder: Decoder[OpenWeatherClientData] = (c: HCursor) => for {
       weatherConditions <- c.downField("current").downField("weather").as[List[WeatherCondition]]
-      temperature <- c.downField("current").downField("temp").as[Temperature]
+      temperature <- c.downField("current").downField("temp").as[Kelvin]
     } yield OpenWeatherClientData(weatherConditions, temperature)
     implicit val weatherEntityDecoder: EntityDecoder[IO, OpenWeatherClientData] = jsonOf
   }
@@ -83,8 +83,8 @@ object Models {
     final case object Moderate extends TemperatureVerdict
     final case object Cold extends TemperatureVerdict
 
-    def fromTemperature(temperature: Temperature): TemperatureVerdict = temperature match {
-      case Temperature(value) => if (value < 285f) Cold
+    def fromTemperature(temperature: Kelvin): TemperatureVerdict = temperature match {
+      case Kelvin(value) => if (value < 285f) Cold
       else if(value > 300f) Hot
       else Moderate
     }
@@ -94,9 +94,9 @@ object Models {
   }
 
   final case class WeatherAppResponse(
-                                     weather: List[WeatherCondition],
-                                     temp: Temperature,
-                                     tempVerdict: TemperatureVerdict
+                                       weather: List[WeatherCondition],
+                                       temp: Kelvin,
+                                       tempVerdict: TemperatureVerdict
                                      )
 
   object WeatherAppResponse {

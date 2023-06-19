@@ -56,7 +56,7 @@ class WeatherRouteSpec extends CatsEffectSuite {
       List(
         WeatherCondition("Rain")
       ),
-      Temperature(280f)
+      Kelvin(280f)
     )
   }
 }

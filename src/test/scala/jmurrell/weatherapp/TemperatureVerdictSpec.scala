@@ -1,11 +1,11 @@
 package jmurrell.weatherapp
 
-import jmurrell.weatherapp.Models.{Temperature, TemperatureVerdict}
+import jmurrell.weatherapp.Models.{Kelvin, TemperatureVerdict}
 import munit.FunSuite
 
 class TemperatureVerdictSpec extends FunSuite{
   test("Freezing temperatures are considered cold") {
-    val temperature = Temperature(273.15f)
+    val temperature = Kelvin(273.15f)
 
     assertEquals(
       TemperatureVerdict.fromTemperature(temperature),
@@ -14,7 +14,7 @@ class TemperatureVerdictSpec extends FunSuite{
   }
 
   test("A high temperature results in a hot verdict") {
-    val temperature = Temperature(310f)
+    val temperature = Kelvin(310f)
 
     assertEquals(
       TemperatureVerdict.fromTemperature(temperature),
@@ -23,7 +23,7 @@ class TemperatureVerdictSpec extends FunSuite{
   }
 
   test("Room temperature results in a moderate verdict") {
-    val temperature = Temperature(293f)
+    val temperature = Kelvin(293f)
 
     assertEquals(
       TemperatureVerdict.fromTemperature(temperature),
