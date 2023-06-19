@@ -1,10 +1,6 @@
 package jmurrell.weatherapp
 
-import cats.effect.IO
 import io.circe
-import io.circe.jawn
-import jmurrell.weatherapp.OpenWeatherClient.{Temperature, WeatherCondition, WeatherResponse}
-import jmurrell.weatherapp.OpenWeatherClient.WeatherResponse.weatherEntityDecoder
 import munit.{CatsEffectSuite, FunSuite}
 import jmurrell.weatherapp.Models._
 
