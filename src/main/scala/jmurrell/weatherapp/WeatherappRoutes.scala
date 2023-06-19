@@ -11,8 +11,8 @@ import org.http4s.dsl.io._
 object WeatherappRoutes {
   def weatherRoutes(client: OpenWeatherClient): HttpRoutes[IO] = {
     HttpRoutes.of[IO] {
-      case GET -> Root / "weather" :? ValidatedLatitudeMatcher(potentialLat) +& ValidatedLongitudeMatcher(potentialLon) =>
-        potentialLat.product(potentialLon)
+      case GET -> Root / "weather" :? ValidatedLatitudeMatcher(potentialLatitude) +& ValidatedLongitudeMatcher(potentialLongitude) =>
+        potentialLatitude.product(potentialLongitude)
           .fold[IO[Response[IO]]](
           parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")),
             {
