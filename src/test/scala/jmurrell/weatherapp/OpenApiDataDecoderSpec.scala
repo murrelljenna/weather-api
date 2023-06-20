@@ -7,6 +7,11 @@ import jmurrell.weatherapp.Models.Output._
 import munit.FunSuite
 
 class OpenApiDataDecoderSpec() extends FunSuite {
+
+  /*
+  Tests our decoding on data from OpenWeather. These tests were super useful for development.
+   */
+
   test("WeatherResponseDecoder decodes example api json") {
     val fixture =
       """

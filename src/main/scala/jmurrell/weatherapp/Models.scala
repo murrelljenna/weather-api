@@ -45,8 +45,13 @@ object Models {
         )
     }
 
+    /*
+    Very cool to get back to using type classes in Scala again!
+     */
+
     implicit val showLatitude: Show[Latitude] = Show.show(lat => lat.value.toString)
     implicit val showLongitude: Show[Longitude] = Show.show(lon => lon.value.toString)
+
     implicit val longitudeQueryParamDecoder: QueryParamDecoder[Latitude] =
       QueryParamDecoder[Float].emapValidatedNel(Latitude.validated)
     implicit val latitudeQueryParamDecoder: QueryParamDecoder[Longitude] =
@@ -84,6 +89,11 @@ object Models {
 
   implicit val temperatureDecoder: Decoder[Kelvin] = Decoder[Float].map(Kelvin.apply)
   implicit val temperatureEncoder: Encoder[Kelvin] = Encoder[Float].contramap(_.value)
+
+  /*
+  I considered representing weather conditions using an enum, but decided against that as that might prevent future compatibility
+  if OpenWeather adds new weather conditions that we can't decode.
+   */
 
   final case class WeatherCondition(main: String) extends AnyVal
 

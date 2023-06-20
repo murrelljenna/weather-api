@@ -13,6 +13,11 @@ object WeatherAppRoutes {
     HttpRoutes.of[IO] {
       case GET -> Root / "weather" :? ValidatedLatitudeMatcher(potentialLatitude) +& ValidatedLongitudeMatcher(potentialLongitude) =>
         potentialLatitude.product(potentialLongitude)
+          /*
+          * I found it interesting that ZIO's prelude library provides a similar Validation type that includes a .toZIO that allows you to
+          * turn your Validation[E, A] into an IO[E, A]. I would normally reach for that, but I found myself here manually folding
+          * my Cats Validated type into an IO.
+           */
           .fold[IO[Response[IO]]](
           parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")), // Invalid latitude and/or longitude = bad request
             {
