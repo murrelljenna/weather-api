@@ -3,6 +3,8 @@ package jmurrell.weatherapp
 import cats.effect.IO
 import cats.implicits.toShow
 import jmurrell.weatherapp.Models._
+import jmurrell.weatherapp.Models.Input._
+import jmurrell.weatherapp.Models.Output._
 import munit.CatsEffectSuite
 import org.http4s._
 import org.http4s.implicits._
@@ -20,8 +22,8 @@ class WeatherAppRouteSpec extends CatsEffectSuite {
   )
 
   test("Request with valid latitude and longitude returns status code 200") {
-    val lat = Latitude.unvalidated(80f)
-    val lon = Longitude.unvalidated(100f)
+    val lat = Latitude(80f)
+    val lon = Longitude(100f)
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 
@@ -29,8 +31,8 @@ class WeatherAppRouteSpec extends CatsEffectSuite {
   }
 
   test("Request with out of bounds latitude and valid longitude returns status code 400") {
-    val lat = Latitude.unvalidated(100f)
-    val lon = Longitude.unvalidated(100f)
+    val lat = Latitude(100f)
+    val lon = Longitude(100f)
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 
@@ -38,8 +40,8 @@ class WeatherAppRouteSpec extends CatsEffectSuite {
   }
 
   test("Request with out of bounds longitude and valid latitude returns status code 400") {
-    val lat = Latitude.unvalidated(80f)
-    val lon = Longitude.unvalidated(190f)
+    val lat = Latitude(80f)
+    val lon = Longitude(190f)
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 

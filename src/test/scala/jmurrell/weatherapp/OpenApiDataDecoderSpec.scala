@@ -2,6 +2,8 @@ package jmurrell.weatherapp
 
 import io.circe
 import jmurrell.weatherapp.Models._
+import jmurrell.weatherapp.Models.Input._
+import jmurrell.weatherapp.Models.Output._
 import munit.FunSuite
 
 class OpenApiDataDecoderSpec() extends FunSuite {

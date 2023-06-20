@@ -2,7 +2,9 @@ package jmurrell.weatherapp
 
 
 import cats.effect.IO
+import jmurrell.weatherapp.Models.Input._
 import jmurrell.weatherapp.Models._
+import jmurrell.weatherapp.Models.Output._
 import org.http4s.dsl.io._
 import org.http4s.{HttpRoutes, Response}
 

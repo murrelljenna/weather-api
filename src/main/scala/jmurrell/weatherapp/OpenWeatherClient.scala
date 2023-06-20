@@ -3,6 +3,7 @@ package jmurrell.weatherapp
 import cats.effect.IO
 import cats.implicits._
 import jmurrell.weatherapp.Models._
+import jmurrell.weatherapp.Models.Input._
 import org.http4s.Method._
 import org.http4s.client.Client
 import org.http4s.client.dsl.io._

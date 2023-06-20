@@ -1,6 +1,7 @@
 package jmurrell.weatherapp
 
-import jmurrell.weatherapp.Models.{Kelvin, TemperatureVerdict}
+import jmurrell.weatherapp.Models._
+import jmurrell.weatherapp.Models.Input._
 import munit.FunSuite
 
 class TemperatureVerdictSpec extends FunSuite{
