@@ -14,9 +14,9 @@ object WeatherAppRoutes {
       case GET -> Root / "weather" :? ValidatedLatitudeMatcher(potentialLatitude) +& ValidatedLongitudeMatcher(potentialLongitude) =>
         potentialLatitude.product(potentialLongitude)
           .fold[IO[Response[IO]]](
-          parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")),
+          parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")), // Invalid latitude and/or longitude = bad request
             {
-              case (lat, lon) => client.get(lat, lon)
+              case (lat, lon) => client.get(lat, lon) // Otherwise fetch from OpenWeather and turn into a response to give back
                 .map({
                   case OpenWeatherClientData(weatherConditions, temperature, alerts) => WeatherAppResponse(
                     weatherConditions, temperature, TemperatureVerdict.fromTemperature(temperature), alerts.nonEmpty, alerts
