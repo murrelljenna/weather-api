@@ -1,13 +1,12 @@
 # Weather App
 
-A web wrapper around OpenWeatherApi.
+Hi there! Thanks for taking a look at my weather app. This is a http wrapper around OpenWeatherApi.
 
 ### Run app
 
 ```bash
 $ sbt run
 [IJ]run
-[info] compiling 5 Scala sources to C:\Users\Jenna\Documents\Code\weather-app\target\scala-2.13\classes ...
 [info] done compiling
 [info] running jmurrell.weatherapp.Main
 ...
