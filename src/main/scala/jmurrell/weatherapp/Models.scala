@@ -75,7 +75,7 @@ object Models {
     implicit val weatherDecoder: Decoder[OpenWeatherClientData] = (c: HCursor) => for {
       weatherConditions <- c.downField("current").downField("weather").as[List[WeatherCondition]]
       temperature <- c.downField("current").downField("temp").as[Kelvin]
-      alerts <- c.downField("alerts").as[List[WeatherAlert]]
+      alerts = c.downField("alerts").as[List[WeatherAlert]].getOrElse(List.empty)
     } yield OpenWeatherClientData(weatherConditions, temperature, alerts)
     implicit val weatherEntityDecoder: EntityDecoder[IO, OpenWeatherClientData] = jsonOf
   }
