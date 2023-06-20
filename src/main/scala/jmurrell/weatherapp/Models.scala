@@ -25,7 +25,7 @@ object Models {
        */
 
       def validated(value: Float): ValidatedNel[ParseFailure, Latitude] =
-        if (value <= 90f && value > -90f) Validated.Valid(Latitude(value))
+        if (value <= 90f && value >= -90f) Validated.Valid(Latitude(value))
         else Validated.Invalid(
           NonEmptyList.one(
             ParseFailure(s"Invalid latitude input \"$value\". Value outside of bounds (-90, 90)", "")
@@ -37,7 +37,7 @@ object Models {
 
     object Longitude {
       def validated(value: Float): ValidatedNel[ParseFailure, Longitude] =
-        if (value <= 180f && value > -180f) Validated.Valid(Longitude(value))
+        if (value <= 180f && value >= -180f) Validated.Valid(Longitude(value))
         else Validated.Invalid(
           NonEmptyList.one(
             ParseFailure(s"Invalid longitude input \"$value\". Value outside of bounds (-180, 180)", "")
