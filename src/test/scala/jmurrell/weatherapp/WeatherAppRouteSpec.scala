@@ -6,8 +6,8 @@ import io.circe.generic.semiauto.deriveDecoder
 import io.circe.{Decoder, HCursor}
 import jmurrell.weatherapp.Models._
 import jmurrell.weatherapp.Models.Input._
+import jmurrell.weatherapp.Models.Output.TemperatureVerdict._
 import jmurrell.weatherapp.Models.Output._
-import jmurrell.weatherapp.Models.TemperatureVerdict.{Cold, Hot, Moderate}
 import munit.CatsEffectSuite
 import org.http4s._
 import org.http4s.circe.jsonOf

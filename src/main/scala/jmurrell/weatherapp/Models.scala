@@ -8,7 +8,6 @@ import io.circe.Decoder._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, HCursor}
-import jmurrell.weatherapp.Models.Output.WeatherAlert
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.dsl.io._
 import org.http4s.{EntityDecoder, EntityEncoder, ParseFailure, QueryParamDecoder}
@@ -46,13 +45,6 @@ object Models {
         )
     }
 
-    final case class Kelvin(value: Float) extends AnyVal
-
-    final case class WeatherCondition(main: String) extends AnyVal
-
-    implicit val weatherConditionDecoder: Decoder[WeatherCondition] = deriveDecoder[WeatherCondition].or(Decoder[String].map(WeatherCondition.apply))
-    implicit val weatherConditionEncoder: Encoder[WeatherCondition] = Encoder[String].contramap(_.main)
-
     implicit val showLatitude: Show[Latitude] = Show.show(lat => lat.value.toString)
     implicit val showLongitude: Show[Longitude] = Show.show(lon => lon.value.toString)
     implicit val longitudeQueryParamDecoder: QueryParamDecoder[Latitude] =
@@ -60,10 +52,9 @@ object Models {
     implicit val latitudeQueryParamDecoder: QueryParamDecoder[Longitude] =
       QueryParamDecoder[Float].emapValidatedNel(Longitude.validated)
 
-    implicit val temperatureDecoder: Decoder[Kelvin] = Decoder[Float].map(Kelvin.apply)
     implicit val longitudeDecoder: Decoder[Longitude] = Decoder[Float].map(Longitude.apply)
     implicit val latitudeDecoder: Decoder[Latitude] = Decoder[Float].map(Latitude.apply)
-    implicit val temperatureEncoder: Encoder[Kelvin] = Encoder[Float].contramap(_.value)
+
     implicit val longitudeEncoder: Encoder[Longitude] = Encoder[Float].contramap(_.value)
     implicit val latitudeEncoder: Encoder[Latitude] = Encoder[Float].contramap(_.value)
 
@@ -89,25 +80,43 @@ object Models {
     implicit val weatherEntityDecoder: EntityDecoder[IO, OpenWeatherClientData] = jsonOf
   }
 
-  sealed trait TemperatureVerdict
+  final case class Kelvin(value: Float) extends AnyVal
 
-  object TemperatureVerdict {
-    final case object Hot extends TemperatureVerdict
-    final case object Moderate extends TemperatureVerdict
-    final case object Cold extends TemperatureVerdict
+  implicit val temperatureDecoder: Decoder[Kelvin] = Decoder[Float].map(Kelvin.apply)
+  implicit val temperatureEncoder: Encoder[Kelvin] = Encoder[Float].contramap(_.value)
 
-    def fromTemperature(temperature: Kelvin): TemperatureVerdict = temperature match {
-      case Kelvin(value) => if (value < 285f) Cold
-      else if(value > 300f) Hot
-      else Moderate
-    }
+  final case class WeatherCondition(main: String) extends AnyVal
 
-    implicit val encodeTemperatureVerdict: Encoder[TemperatureVerdict] = Encoder.instance {
-      case h@Hot => "Hot".asJson
-      case m@Moderate => "Moderate".asJson
-      case c@Cold => "Cold".asJson
-    }
-  }
+  implicit val weatherConditionDecoder: Decoder[WeatherCondition] = deriveDecoder[WeatherCondition].or(Decoder[String].map(WeatherCondition.apply))
+  implicit val weatherConditionEncoder: Encoder[WeatherCondition] = Encoder[String].contramap(_.main)
+
+  case class AlertSender(value: String) extends AnyVal
+
+  implicit val alertSenderDecoder: Decoder[AlertSender] = Decoder[String].map(AlertSender.apply)
+  implicit val alertSenderEncoder: Encoder[AlertSender] = Encoder[String].contramap(_.value)
+
+  case class AlertEvent(value: String) extends AnyVal
+
+  implicit val alertEventDecoder: Decoder[AlertEvent] = Decoder[String].map(AlertEvent.apply)
+  implicit val alertEventEncoder: Encoder[AlertEvent] = Encoder[String].contramap(_.value)
+
+  case class AlertDescription(value: String) extends AnyVal
+
+  implicit val alertDescriptionDecoder: Decoder[AlertDescription] = Decoder[String].map(AlertDescription.apply)
+  implicit val alertDescriptionEncoder: Encoder[AlertDescription] = Encoder[String].contramap(_.value)
+
+  case class WeatherAlert(
+                           sender: AlertSender,
+                           event: AlertEvent,
+                           description: AlertDescription
+                         )
+
+  implicit val weatherAlertDecoder: Decoder[WeatherAlert] = (c: HCursor) => for {
+    sender <- c.downField("sender_name").as[AlertSender]
+    event <- c.downField("event").as[AlertEvent]
+    desc <- c.downField("description").as[AlertDescription]
+  } yield WeatherAlert(sender, event, desc)
+  implicit val weatherAlertEncoder: Encoder[WeatherAlert] = deriveEncoder[WeatherAlert]
 
   object Output {
     final case class WeatherAppResponse(
@@ -123,32 +132,26 @@ object Models {
       implicit val weatherAppResponseEntityEncoder: EntityEncoder[IO, WeatherAppResponse] = jsonEncoderOf
     }
 
-    case class AlertSender(value: String) extends AnyVal
+    sealed trait TemperatureVerdict
 
-    implicit val alertSenderDecoder: Decoder[AlertSender] = Decoder[String].map(AlertSender.apply)
-    implicit val alertSenderEncoder: Encoder[AlertSender] = Encoder[String].contramap(_.value)
+    object TemperatureVerdict {
+      final case object Hot extends TemperatureVerdict
 
-    case class AlertEvent(value: String) extends AnyVal
+      final case object Moderate extends TemperatureVerdict
 
-    implicit val alertEventDecoder: Decoder[AlertEvent] = Decoder[String].map(AlertEvent.apply)
-    implicit val alertEventEncoder: Encoder[AlertEvent] = Encoder[String].contramap(_.value)
+      final case object Cold extends TemperatureVerdict
 
-    case class AlertDescription(value: String) extends AnyVal
+      def fromTemperature(temperature: Kelvin): TemperatureVerdict = temperature match {
+        case Kelvin(value) => if (value < 285f) Cold
+        else if (value > 300f) Hot
+        else Moderate
+      }
 
-    implicit val alertDescriptionDecoder: Decoder[AlertDescription] = Decoder[String].map(AlertDescription.apply)
-    implicit val alertDescriptionEncoder: Encoder[AlertDescription] = Encoder[String].contramap(_.value)
-
-    case class WeatherAlert(
-                             sender: AlertSender,
-                             event: AlertEvent,
-                             description: AlertDescription
-                           )
-
-    implicit val weatherAlertDecoder: Decoder[WeatherAlert] = (c: HCursor) => for {
-      sender <- c.downField("sender_name").as[AlertSender]
-      event <- c.downField("event").as[AlertEvent]
-      desc <- c.downField("description").as[AlertDescription]
-    } yield WeatherAlert(sender, event, desc)
-    implicit val weatherAlertEncoder: Encoder[WeatherAlert] = deriveEncoder[WeatherAlert]
+      implicit val encodeTemperatureVerdict: Encoder[TemperatureVerdict] = Encoder.instance {
+        case h@Hot => "Hot".asJson
+        case m@Moderate => "Moderate".asJson
+        case c@Cold => "Cold".asJson
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 package jmurrell.weatherapp
 
 import jmurrell.weatherapp.Models._
-import jmurrell.weatherapp.Models.Input._
+import jmurrell.weatherapp.Models.Output._
 import munit.FunSuite
 
 class TemperatureVerdictSpec extends FunSuite{
