@@ -3,9 +3,8 @@ package jmurrell.weatherapp
 
 import cats.effect.IO
 import jmurrell.weatherapp.Models._
-import org.http4s.{HttpRoutes, QueryParamDecoder, Response, Status}
 import org.http4s.dsl.io._
-import org.http4s.ember.core.EmberException.ParseError
+import org.http4s.{HttpRoutes, Response}
 
 object WeatherappRoutes {
   def weatherRoutes(client: OpenWeatherClient): HttpRoutes[IO] = {

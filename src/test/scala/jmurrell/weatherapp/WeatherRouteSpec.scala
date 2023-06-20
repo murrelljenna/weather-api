@@ -3,9 +3,9 @@ package jmurrell.weatherapp
 import cats.effect.IO
 import cats.implicits.toShow
 import jmurrell.weatherapp.Models._
+import munit.CatsEffectSuite
 import org.http4s._
 import org.http4s.implicits._
-import munit.CatsEffectSuite
 
 class WeatherRouteSpec extends CatsEffectSuite {
   private[this] def mockWeatherClient(res: OpenWeatherClientData) = new OpenWeatherClient {

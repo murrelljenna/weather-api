@@ -1,8 +1,8 @@
 package jmurrell.weatherapp
 
 import io.circe
-import munit.{CatsEffectSuite, FunSuite}
 import jmurrell.weatherapp.Models._
+import munit.FunSuite
 
 class WeatherResponseDecoderSpec() extends FunSuite {
   test("WeatherResponseDecoder decodes example api json") {

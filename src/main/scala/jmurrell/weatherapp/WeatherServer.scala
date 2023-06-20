@@ -3,11 +3,10 @@ package jmurrell.weatherapp
 import cats.effect.IO
 import com.comcast.ip4s._
 import jmurrell.weatherapp.OpenWeatherClient.OpenWeatherApiError
-import org.http4s.ParseFailure
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
-import org.http4s.server.middleware.{ErrorAction, ErrorHandling, Logger}
+import org.http4s.server.middleware.{ErrorAction, ErrorHandling}
 
 object WeatherServer {
 

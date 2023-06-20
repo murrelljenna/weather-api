@@ -2,13 +2,11 @@ package jmurrell.weatherapp
 
 import cats.effect.IO
 import cats.implicits._
+import jmurrell.weatherapp.Models._
 import org.http4s.Method._
 import org.http4s.client.Client
 import org.http4s.client.dsl.io._
 import org.http4s.implicits._
-import jmurrell.weatherapp.Models._
-import org.http4s.ParseFailure
-import org.http4s.ember.core.EmberException.ParseError
 
 trait OpenWeatherClient{
   def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData]

@@ -1,16 +1,16 @@
 package jmurrell.weatherapp
 
-import org.http4s.{EntityDecoder, EntityEncoder, ParseFailure, QueryParamDecoder}
 import cats.Show
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
 import cats.implicits.toFunctorOps
-import io.circe.{Decoder, Encoder, HCursor}
 import io.circe.Decoder._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder, HCursor}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.dsl.io._
-import io.circe.syntax._
+import org.http4s.{EntityDecoder, EntityEncoder, ParseFailure, QueryParamDecoder}
 
 object Models {
   final case class Latitude private (value: Float) extends AnyVal
@@ -70,8 +70,7 @@ object Models {
   final case class OpenWeatherClientData(weather: List[WeatherCondition], temp: Kelvin, alerts: List[WeatherAlert])
 
   object OpenWeatherClientData {
-    import io.circe.generic.semiauto._
-    import io.circe.{Decoder, Encoder, HCursor}
+    import io.circe.{Decoder, HCursor}
     implicit val weatherDecoder: Decoder[OpenWeatherClientData] = (c: HCursor) => for {
       weatherConditions <- c.downField("current").downField("weather").as[List[WeatherCondition]]
       temperature <- c.downField("current").downField("temp").as[Kelvin]
