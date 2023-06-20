@@ -16,10 +16,6 @@ object WeatherServer {
 
       openWeatherClient = OpenWeatherClient.impl(client, appId)
 
-      // Combine Service Routes into an HttpApp.
-      // Can also be done via a Router if you
-      // want to extract a segments not checked
-      // in the underlying routes.
       httpApp = (
         WeatherappRoutes.weatherRoutes(openWeatherClient)
         ).orNotFound
