@@ -102,22 +102,11 @@ object Models {
       else Moderate
     }
 
-    implicit val hotDecoder: Decoder[Hot.type] = deriveDecoder[Hot.type]
-    implicit val ColdDecoder: Decoder[Cold.type] = deriveDecoder[Cold.type]
-    implicit val moderateDecoder: Decoder[Moderate.type] = deriveDecoder[Moderate.type]
-
     implicit val encodeTemperatureVerdict: Encoder[TemperatureVerdict] = Encoder.instance {
       case h@Hot => "Hot".asJson
       case m@Moderate => "Moderate".asJson
       case c@Cold => "Cold".asJson
     }
-
-    implicit val decodeTemperatureVerdict: Decoder[TemperatureVerdict] =
-      List[Decoder[TemperatureVerdict]](
-        Decoder[Moderate.type].widen,
-        Decoder[Cold.type].widen,
-        Decoder[Hot.type].widen,
-      ).reduceLeft(_ or _)
   }
 
   object Output {
@@ -130,9 +119,6 @@ object Models {
                                        )
 
     object WeatherAppResponse {
-      implicit val weatherAppResponseDecoder: Decoder[WeatherAppResponse] = deriveDecoder[WeatherAppResponse]
-      implicit val weatherAppResponseEntityDecoder: EntityDecoder[IO, WeatherAppResponse] = jsonOf
-
       implicit val weatherAppResponseEncoder: Encoder[WeatherAppResponse] = deriveEncoder[WeatherAppResponse]
       implicit val weatherAppResponseEntityEncoder: EntityEncoder[IO, WeatherAppResponse] = jsonEncoderOf
     }
