@@ -4,6 +4,13 @@ import jmurrell.weatherapp.Models.{Kelvin, TemperatureVerdict}
 import munit.FunSuite
 
 class TemperatureVerdictSpec extends FunSuite{
+
+  /*
+  One could write tests that focus on the boundary cases between hot/moderate/cold, testing exactly the point at which
+  one state becomes another. These boundaries are quite subjective so I created 3 obvious cases that should always hold true.
+  Freezing temperatures should always be considered "Cold", room temperature should always be considered "Moderate".
+   */
+
   test("Freezing temperatures are considered cold") {
     val temperature = Kelvin(273.15f)
 
