@@ -36,6 +36,24 @@ class WeatherAppRouteSpec extends CatsEffectSuite {
     assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status),Status.Ok)
   }
 
+  test("Request with latitude and longitude on the edge of validity returns status code 200") {
+    val lat = Latitude(90f)
+    val lon = Longitude(180f)
+
+    val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
+
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status), Status.Ok)
+  }
+
+  test("Request with latitude and longitude on the negative edge of validity returns status code 200") {
+    val lat = Latitude(-90f)
+    val lon = Longitude(-180f)
+
+    val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
+
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status), Status.Ok)
+  }
+
   test("Server response indicates when OpenWeather reports alerts") {
     val lat = Latitude(80f)
     val lon = Longitude(100f)
@@ -57,7 +75,16 @@ class WeatherAppRouteSpec extends CatsEffectSuite {
   }
 
   test("Request with out of bounds latitude and valid longitude returns status code 400") {
-    val lat = Latitude(100f)
+    val lat = Latitude(90.01f)
+    val lon = Longitude(100f)
+
+    val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
+
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status), Status.BadRequest)
+  }
+
+  test("Request with out of bounds latitude (negative) and valid longitude returns status code 400") {
+    val lat = Latitude(-90.01f)
     val lon = Longitude(100f)
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
@@ -67,7 +94,16 @@ class WeatherAppRouteSpec extends CatsEffectSuite {
 
   test("Request with out of bounds longitude and valid latitude returns status code 400") {
     val lat = Latitude(80f)
-    val lon = Longitude(190f)
+    val lon = Longitude(180.01f)
+
+    val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
+
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status), Status.BadRequest)
+  }
+
+  test("Request with out of bounds longitude (negative) and valid latitude returns status code 400") {
+    val lat = Latitude(80f)
+    val lon = Longitude(-180.01f)
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 

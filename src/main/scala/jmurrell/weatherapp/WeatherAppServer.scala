@@ -25,9 +25,7 @@ object WeatherAppServer {
 
       openWeatherClient = OpenWeatherClient.impl(client, appId)
 
-      httpApp = (
-        WeatherAppRoutes.weatherRoutes(openWeatherClient)
-        ).orNotFound
+      httpApp = WeatherAppRoutes.weatherRoutes(openWeatherClient).orNotFound
 
       finalHttpApp = ErrorHandling.Recover.total(
         ErrorAction.log(
