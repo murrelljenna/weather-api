@@ -13,6 +13,11 @@ trait OpenWeatherClient{
   def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData]
 }
 
+/*
+Funnily enough, there is a scala api for OpenWeather someone made here: https://index.scala-lang.org/snowplow/scala-weather that would
+be better to use, though in this case I was excited to try out the http4s client directly.
+ */
+
 object OpenWeatherClient {
   final case class OpenWeatherApiError(message: String) extends Throwable
   def impl(C: Client[IO], appId: String): OpenWeatherClient = new OpenWeatherClient{

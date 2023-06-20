@@ -129,7 +129,7 @@ class OpenApiDataDecoderSpec() extends FunSuite {
     )
   }
 
-  test("WeatherResponseDecoder decodes example OpenWeather api response with no alert") {
+  test("WeatherResponseDecoder decodes example OpenWeather api response with no alert key, resulting in an empty list of alerts") {
     val fixture =
       """
         |{
@@ -166,16 +166,6 @@ class OpenApiDataDecoderSpec() extends FunSuite {
         |	"hourly": [{
         |		"dt": 1684926000,
         |		"temp": 292.01,
-        |		"feels_like": 292.33,
-        |		"pressure": 1014,
-        |		"humidity": 91,
-        |		"dew_point": 290.51,
-        |		"uvi": 0,
-        |		"clouds": 54,
-        |		"visibility": 10000,
-        |		"wind_speed": 2.58,
-        |		"wind_deg": 86,
-        |		"wind_gust": 5.88,
         |		"weather": [{
         |			"id": 803,
         |			"main": "Clouds",
@@ -200,12 +190,6 @@ class OpenApiDataDecoderSpec() extends FunSuite {
         |			"eve": 297.51,
         |			"morn": 292.55
         |		},
-        |		"pressure": 1016,
-        |		"humidity": 59,
-        |		"dew_point": 290.48,
-        |		"wind_speed": 3.98,
-        |		"wind_deg": 76,
-        |		"wind_gust": 8.92,
         |		"weather": [{
         |			"id": 500,
         |			"main": "Rain",

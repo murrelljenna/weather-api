@@ -16,7 +16,7 @@ object WeatherAppRoutes {
           /*
           * I found it interesting that ZIO's prelude library provides a similar Validation type that includes a .toZIO that allows you to
           * turn your Validation[E, A] into an IO[E, A]. I would normally reach for that, but I found myself here manually folding
-          * my Cats Validated type into an IO.
+          * my Cats Validated type into an IO. Perhaps there is a way to do this that kept a flat for comprehension?
            */
           .fold[IO[Response[IO]]](
           parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")), // Invalid latitude and/or longitude = bad request

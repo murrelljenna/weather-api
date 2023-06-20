@@ -11,6 +11,9 @@ import org.http4s.server.middleware.{ErrorAction, ErrorHandling}
 object WeatherAppServer {
   val appId = "abcd"
 
+  /*
+  Coming from ZIO, I found it more awkward to need to pattern match on Throwable specifically in order to do error checking.
+   */
   private def printErrors(t: Throwable, msg: => String): IO[Unit] = (t, msg) match {
     case (OpenWeatherApiError(message), _) => IO.println(s"Error received from OpenWeather API client: $message")
     case (t, _) => IO.println(s"Error encountered: $t")
