@@ -9,7 +9,7 @@ import org.http4s.implicits._
 
 class WeatherRouteSpec extends CatsEffectSuite {
   private[this] def mockWeatherClient(res: OpenWeatherClientData) = new OpenWeatherClient {
-    override def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData] = IO.blocking(println(res)) *> IO.pure(
+    override def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData] = IO.pure(
       res
     )
   }
