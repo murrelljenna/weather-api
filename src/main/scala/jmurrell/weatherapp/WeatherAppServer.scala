@@ -10,6 +10,12 @@ import org.http4s.server.middleware.{ErrorAction, ErrorHandling}
 
 object WeatherAppServer {
   val appId = "abcd"
+
+  private def printErrors(t: Throwable, msg: => String): IO[Unit] = (t, msg) match {
+    case (OpenWeatherApiError(message), _) => IO.println(s"Error received from OpenWeather API client: $message")
+    case (t, _) => IO.println(s"Error encountered: $t")
+  }
+
   def run: IO[Nothing] = {
     for {
       client <- EmberClientBuilder.default[IO].build
@@ -23,14 +29,8 @@ object WeatherAppServer {
       finalHttpApp = ErrorHandling.Recover.total(
         ErrorAction.log(
           httpApp,
-          messageFailureLogAction = {
-            case (OpenWeatherApiError(message), _) => IO.println(s"Error received from OpenWeather API client: $message")
-            case (t, _) => IO.println(s"Error encountered: $t")
-          },
-          serviceErrorLogAction = {
-            case (OpenWeatherApiError(message), _) => IO.println(s"Error received from OpenWeather API client: $message")
-            case (t, _) => IO.println(s"Error encountered: $t")
-          }
+          messageFailureLogAction = printErrors,
+          serviceErrorLogAction = printErrors
         )
       )
 
