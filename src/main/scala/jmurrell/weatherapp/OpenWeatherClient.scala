@@ -10,14 +10,14 @@ import org.http4s.implicits._
 import jmurrell.weatherapp.Models._
 
 trait OpenWeatherClient{
-  def get(lat: Latitude, lon: Longitude): IO[WeatherResponse]
+  def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData]
 }
 
 object OpenWeatherClient {
   final case class WeatherAppError(e: Throwable) extends RuntimeException
   def impl(C: Client[IO]): OpenWeatherClient = new OpenWeatherClient{
-    def get(lat: Latitude, lon: Longitude): IO[WeatherResponse] = {
-      C.expect[WeatherResponse](
+    def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData] = {
+      C.expect[OpenWeatherClientData](
         GET(uri"https://api.openweathermap.org/data/3.0/onecall".withQueryParams(Map("lat" -> lat.show, "lon" -> lon.show, "appid" -> "abcd")))
       )
         .adaptError{ case t => WeatherAppError(t)} // Prevent Client Json Decoding Failure Leaking

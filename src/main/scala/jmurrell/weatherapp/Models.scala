@@ -64,19 +64,45 @@ object Models {
   object ValidatedLatitudeMatcher extends ValidatingQueryParamDecoderMatcher[Latitude]("lat")
   object ValidatedLongitudeMatcher extends ValidatingQueryParamDecoderMatcher[Longitude]("lon")
 
-  final case class WeatherResponse(lat: Latitude, lon: Longitude, weather: List[WeatherCondition], temp: Temperature)
+  final case class OpenWeatherClientData(lat: Latitude, lon: Longitude, weather: List[WeatherCondition], temp: Temperature)
 
-  object WeatherResponse {
+  object OpenWeatherClientData {
     import io.circe.generic.semiauto._
     import io.circe.{Decoder, Encoder, HCursor}
-    implicit val weatherDecoder: Decoder[WeatherResponse] = (c: HCursor) => for {
+    implicit val weatherDecoder: Decoder[OpenWeatherClientData] = (c: HCursor) => for {
       lat <- c.downField("lat").as[Latitude]
       lon <- c.downField("lon").as[Longitude]
       weatherConditions <- c.downField("current").downField("weather").as[List[WeatherCondition]]
       temperature <- c.downField("current").downField("temp").as[Temperature]
-    } yield WeatherResponse(lat, lon, weatherConditions, temperature)
-    implicit val weatherEntityDecoder: EntityDecoder[IO, WeatherResponse] = jsonOf
-    implicit val weatherEncoder: Encoder[WeatherResponse] = deriveEncoder[WeatherResponse]
-    implicit val weatherEntityEncoder: EntityEncoder[IO, WeatherResponse] = jsonEncoderOf
+    } yield OpenWeatherClientData(lat, lon, weatherConditions, temperature)
+    implicit val weatherEntityDecoder: EntityDecoder[IO, OpenWeatherClientData] = jsonOf
+  }
+
+  sealed trait TemperatureVerdict
+
+  object TemperatureVerdict {
+    final case object Hot extends TemperatureVerdict
+    final case object Moderate extends TemperatureVerdict
+    final case object Cold extends TemperatureVerdict
+
+    def fromTemperature(temperature: Temperature): TemperatureVerdict = temperature match {
+      case Temperature(value) => if (value < 285f) Cold
+      else if(value > 300f) Hot
+      else Moderate
+    }
+
+    implicit val temperatureVerdictEncoder: Encoder[TemperatureVerdict] = deriveEncoder[TemperatureVerdict]
+    implicit val temperatureVerdictEntityEncoder: EntityEncoder[IO, TemperatureVerdict] = jsonEncoderOf
+  }
+
+  final case class WeatherAppResponse(
+                                     weather: List[WeatherCondition],
+                                     temp: Temperature,
+                                     tempVerdict: TemperatureVerdict
+                                     )
+
+  object WeatherAppResponse {
+    implicit val weatherAppResponseEncoder: Encoder[WeatherAppResponse] = deriveEncoder[WeatherAppResponse]
+    implicit val weatherAppResponseEntityEncoder: EntityEncoder[IO, WeatherAppResponse] = jsonEncoderOf
   }
 }

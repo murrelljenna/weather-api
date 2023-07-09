@@ -8,8 +8,8 @@ import org.http4s.implicits._
 import munit.CatsEffectSuite
 
 class WeatherRouteSpec extends CatsEffectSuite {
-  private[this] def mockWeatherClient(res: WeatherResponse) = new OpenWeatherClient {
-    override def get(lat: Latitude, lon: Longitude): IO[WeatherResponse] = IO.pure(
+  private[this] def mockWeatherClient(res: OpenWeatherClientData) = new OpenWeatherClient {
+    override def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData] = IO.pure(
       res.copy(lat = lat, lon = lon)
     )
   }
@@ -25,7 +25,7 @@ class WeatherRouteSpec extends CatsEffectSuite {
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 
-    assertIO(weatherRoute(validReq).map(_.status),Status.Ok)
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status),Status.Ok)
   }
 
   test("Request with out of bounds latitude and valid longitude returns status code 400") {
@@ -34,7 +34,7 @@ class WeatherRouteSpec extends CatsEffectSuite {
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 
-    assertIO(weatherRoute(validReq).map(_.status), Status.BadRequest)
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status), Status.BadRequest)
   }
 
   test("Request with out of bounds longitude and valid latitude returns status code 400") {
@@ -43,11 +43,16 @@ class WeatherRouteSpec extends CatsEffectSuite {
 
     val validReq = Request[IO](Method.GET, uri"/weather".withQueryParams(coordinateParams(lat, lon)))
 
-    assertIO(weatherRoute(validReq).map(_.status), Status.BadRequest)
+    assertIO(weatherRoute(validReq, Fixture.anyMockWeatherResponse).map(_.status), Status.BadRequest)
   }
 
-  private[this] def weatherRoute(req: Request[IO]): IO[Response[IO]] = {
-    val mockWeatherResponse = WeatherResponse(
+  private[this] def weatherRoute(req: Request[IO], mockedOpenWeatherData: OpenWeatherClientData): IO[Response[IO]] = {
+    val weatherClient = mockWeatherClient(mockedOpenWeatherData)
+    WeatherappRoutes.weatherRoutes(weatherClient).orNotFound(req)
+  }
+
+  object Fixture {
+    val anyMockWeatherResponse = OpenWeatherClientData(
       Latitude.unvalidated(50f),
       Longitude.unvalidated(50f),
       List(
@@ -55,7 +60,5 @@ class WeatherRouteSpec extends CatsEffectSuite {
       ),
       Temperature(280f)
     )
-    val weatherClient = mockWeatherClient(mockWeatherResponse)
-    WeatherappRoutes.weatherRoutes(weatherClient).orNotFound(req)
   }
 }

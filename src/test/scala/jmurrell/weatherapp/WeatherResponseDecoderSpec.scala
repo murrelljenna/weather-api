@@ -113,9 +113,9 @@ class WeatherResponseDecoderSpec() extends FunSuite {
         |""".stripMargin
 
     assertEquals(
-      circe.jawn.decode[WeatherResponse](fixture),
+      circe.jawn.decode[OpenWeatherClientData](fixture),
       Right(
-        WeatherResponse(
+        OpenWeatherClientData(
           Latitude(33.44f), Longitude(-94.04f),
           List(WeatherCondition("Clouds")),
           Temperature(292.55f)

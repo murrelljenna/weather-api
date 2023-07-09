@@ -17,6 +17,13 @@ object WeatherappRoutes {
           parseErrors => BadRequest(parseErrors.toList.map(_.sanitized).mkString("\n")),
             {
               case (lat, lon) => client.get(lat, lon)
+                .map({
+                  case OpenWeatherClientData(_, _, weatherConditions, temperature) => WeatherAppResponse(
+                    weatherConditions, temperature, TemperatureVerdict.fromTemperature(temperature)
+                  )
+
+                }
+                )
                 .flatMap(res => Ok(res))
                 .handleErrorWith(t => InternalServerError(t.getMessage))
             }
