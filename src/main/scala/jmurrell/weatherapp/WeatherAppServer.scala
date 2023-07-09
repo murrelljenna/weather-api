@@ -8,7 +8,7 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.middleware.{ErrorAction, ErrorHandling}
 
-object WeatherServer {
+object WeatherAppServer {
   val appId = "abcd"
   def run: IO[Nothing] = {
     for {
@@ -17,7 +17,7 @@ object WeatherServer {
       openWeatherClient = OpenWeatherClient.impl(client, appId)
 
       httpApp = (
-        WeatherappRoutes.weatherRoutes(openWeatherClient)
+        WeatherAppRoutes.weatherRoutes(openWeatherClient)
         ).orNotFound
 
       finalHttpApp = ErrorHandling.Recover.total(

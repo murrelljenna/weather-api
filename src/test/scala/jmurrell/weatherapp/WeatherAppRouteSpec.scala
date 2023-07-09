@@ -7,7 +7,7 @@ import munit.CatsEffectSuite
 import org.http4s._
 import org.http4s.implicits._
 
-class WeatherRouteSpec extends CatsEffectSuite {
+class WeatherAppRouteSpec extends CatsEffectSuite {
   private[this] def mockWeatherClient(res: OpenWeatherClientData) = new OpenWeatherClient {
     override def get(lat: Latitude, lon: Longitude): IO[OpenWeatherClientData] = IO.pure(
       res
@@ -48,7 +48,7 @@ class WeatherRouteSpec extends CatsEffectSuite {
 
   private[this] def weatherRoute(req: Request[IO], mockedOpenWeatherData: OpenWeatherClientData): IO[Response[IO]] = {
     val weatherClient = mockWeatherClient(mockedOpenWeatherData)
-    WeatherappRoutes.weatherRoutes(weatherClient).orNotFound(req)
+    WeatherAppRoutes.weatherRoutes(weatherClient).orNotFound(req)
   }
 
   object Fixture {

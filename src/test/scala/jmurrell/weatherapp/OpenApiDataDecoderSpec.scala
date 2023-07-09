@@ -4,7 +4,7 @@ import io.circe
 import jmurrell.weatherapp.Models._
 import munit.FunSuite
 
-class WeatherResponseDecoderSpec() extends FunSuite {
+class OpenApiDataDecoderSpec() extends FunSuite {
   test("WeatherResponseDecoder decodes example api json") {
     val fixture =
       """
