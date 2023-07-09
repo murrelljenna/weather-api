@@ -9,11 +9,12 @@ import org.http4s.implicits._
 import org.http4s.server.middleware.{ErrorAction, ErrorHandling}
 
 object WeatherServer {
-
+  val appId = "abcd"
   def run: IO[Nothing] = {
     for {
       client <- EmberClientBuilder.default[IO].build
-      openWeatherClient = OpenWeatherClient.impl(client)
+
+      openWeatherClient = OpenWeatherClient.impl(client, appId)
 
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
